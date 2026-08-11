@@ -1,12 +1,11 @@
 import { Component } from "react";
+import PropTypes from "prop-types";
 
 import Spinner from "../spinner/Spinner";
 import ErrorMessage from "../errorMessage/errorMessage";
 import Skeleton from "../skeleton/skeleton";
-
-import "./charInfo.scss";
-import thor from "../../resources/img/thor.jpeg";
 import MarvelService from "../../services/marvelService";
+import "./charInfo.scss";
 
 class CharInfo extends Component {
   state = {
@@ -88,7 +87,7 @@ const View = ({ char }) => {
   return (
     <>
       <div className="char__basics">
-        <img src={thumbnail} alt={name} style={imgStyle}/>
+        <img src={thumbnail} alt={name} style={imgStyle} />
         <div>
           <div className="char__info-name">{name}</div>
           <div className="char__btns">
@@ -116,6 +115,10 @@ const View = ({ char }) => {
       </ul>
     </>
   );
+};
+
+CharInfo.propTypes = {
+  charId: PropTypes.number,
 };
 
 export default CharInfo;
