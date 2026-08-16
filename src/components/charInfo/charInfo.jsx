@@ -87,7 +87,16 @@ const View = ({ char }) => {
   return (
     <>
       <div className="char__basics">
-        <img src={thumbnail} alt={name} style={imgStyle} />
+        <img
+          src={thumbnail}
+          alt={name}
+          style={imgStyle}
+          onError={(e) => {
+            e.target.src =
+              "https://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg";
+            e.target.style.objectFit = "unset";
+          }}
+        />
         <div>
           <div className="char__info-name">{name}</div>
           <div className="char__btns">

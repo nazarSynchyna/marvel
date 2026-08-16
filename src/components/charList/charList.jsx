@@ -102,8 +102,9 @@ class CharList extends Component {
             alt={item.name}
             style={imgStyle}
             onError={(e) => {
+              e.currentTarget.onerror = null;
               e.target.src =
-                "http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg";
+                "https://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg";
               e.target.style.objectFit = "unset";
             }}
           />

@@ -1,6 +1,6 @@
 import { Component } from "react";
 import Spinner from "../spinner/Spinner";
-import ErrorMessage from "../errorMessage/errorMessage"
+import ErrorMessage from "../errorMessage/errorMessage";
 import MarvelService from "../../services/marvelService";
 
 import "./randomChar.scss";
@@ -84,9 +84,7 @@ class RandomChar extends Component {
 const View = ({ char }) => {
   const { name, description, thumbnail, homepage, wiki } = char;
   let imgStyle = { objectFit: "cover" };
-  if (
-    thumbnail === null
-  ) {
+  if (thumbnail === null) {
     imgStyle = { objectFit: "contain" };
   }
 
@@ -97,6 +95,12 @@ const View = ({ char }) => {
         alt="Random character"
         className="randomchar__img"
         style={imgStyle}
+        onError={(e) => {
+          e.currentTarget.onerror = null;
+          e.target.src =
+            "http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg";
+          e.target.style.objectFit = "unset";
+        }}
       />
       <div className="randomchar__info">
         <p className="randomchar__name">{name}</p>
