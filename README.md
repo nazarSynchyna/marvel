@@ -1,60 +1,55 @@
 # Marvel Explorer (React + Vite)
 
-A responsive single-page React app to browse Marvel characters and comics. The UI supports random character discovery, character lists, and detail/comic previews while providing loading skeletons and graceful error handling. It uses a small service wrapper (src/services/MarvelService.jsx) to fetch data from a backend API that proxies the Marvel Comics API.
-
-I inspected:
-- package.json — contains the exact npm scripts used in this project.
-- src/services/MarvelService.jsx — uses a remote API base and embeds an API key string; README below documents how to configure this safely.
+A single-page React application built with Vite for browsing Marvel characters and comics. The project is implemented in plain JavaScript with SCSS for styling. This README has been updated to reflect the repository's current files and configuration.
 
 ---
 
 ## Live demo
 
-Live demo (placeholder)
-- https://nazarSynchyna.github.io/marvel/
+No public live demo is published from this repository. The project includes gh-pages deployment scripts and can be published to GitHub Pages if you configure the Vite `base` option and run the deploy script.
 
 ---
 
 ## Key features
-- Character list with pagination
-- Character detail page with description, homepage/wiki, and comics list
+
+- Character listing with pagination
+- Character detail view (description, homepage/wiki, comics list)
 - Random character widget for discovery
 - Comics list and single-comic preview components
-- Loading skeletons and spinners for async states
-- Global Error Boundary and UI-friendly error messages
-- Responsive UI styled with SCSS
-- Production build and GitHub Pages deploy support via gh-pages
+- Loading skeletons and spinner components for async states
+- Top-level ErrorBoundary component for render-time errors
 
 ---
 
 ## Tech stack
-- React (client)
+
+- React (client-side UI) — see dependencies in package.json (React 19)
 - Vite (dev server & build)
 - SCSS (Sass) for styling
-- Marvel Comics API (proxied by a server; service wrapper in src/services/MarvelService.jsx)
-- Deployment: GitHub Pages (gh-pages)
+- Marvel Comics API accessed through a proxy/service wrapper (see src/services/MarvelService.jsx)
+- Deployment helper: gh-pages (predeploy/deploy scripts in package.json)
 
 ---
 
-## Project structure
+## Project structure (important files)
 
 ```
 src/
   components/
     app/                # App root (App.jsx)
-    appBanner/          # Hero/banner component
-    appHeader/          # Header/nav
+    appBanner/          # Banner/hero component
+    appHeader/          # Header / navigation
     randomChar/         # Random character widget
     charList/           # Character list & items
     charInfo/           # Character detail view
     comicsList/         # Comics listing UI
     singleComic/        # Single comic detail view
     errorBoundary/      # Top-level ErrorBoundary component
-    errorMessage/      # Reusable error message UI
-    spinner/            # Spinner
+    errorMessage/       # Reusable error message UI
+    spinner/            # Spinner component
     skeleton/           # Skeleton placeholders
   services/
-    MarvelService.jsx   # Centralized wrapper for all API calls
+    MarvelService.jsx   # Centralized wrapper for API calls (currently includes hardcoded API base and key)
   resources/            # Static images / icons
   style/
     style.scss          # Global SCSS entry
@@ -65,29 +60,29 @@ package.json
 vite.config.js
 ```
 
-How it fits together:
-- main.jsx bootstraps React and renders App.jsx.
-- App.jsx composes header/banner and main views and delegates data fetching to MarvelService.
-- MarvelService.jsx calls the proxied API (see below) and normalizes API responses for UI components.
-- Components show skeletons, spinners, or error messages while waiting for API responses.
+Notes:
+- main.jsx bootstraps React and renders the app.
+- The MarvelService wrapper is located at src/services/MarvelService.jsx and is the single place where API requests are composed.
 
 ---
 
 ## Getting started — local development
 
 Prerequisites
-- Node.js (LTS recommended, e.g., 18.x or newer)
-- npm (default examples below use npm)
+- Node.js (LTS recommended)
+- npm
 
 Clone and install
+
 ```bash
 git clone https://github.com/nazarSynchyna/marvel.git
 cd marvel
 npm install
 ```
 
-Exact npm scripts (from package.json)
-```json name=package.json
+Useful npm scripts (from package.json)
+
+```json
 {
   "scripts": {
     "dev": "vite",
@@ -101,108 +96,93 @@ Exact npm scripts (from package.json)
 ```
 
 Start dev server
+
 ```bash
 npm run dev
 ```
 
 Build production assets
+
 ```bash
 npm run build
 ```
 
 Preview production build locally
+
 ```bash
 npm run preview
 ```
 
-Deploy (uses gh-pages)
+Publish to GitHub Pages (if configured)
+
 ```bash
 npm run deploy
 ```
-
-Notes:
-- The repo already includes gh-pages as a devDependency; the package.json predeploy + deploy scripts are configured to build and publish dist to GitHub Pages.
 
 ---
 
 ## Environment and API configuration
 
-Current state (what I found)
-- src/services/MarvelService.jsx currently hardcodes:
+Current state (what's in the repository)
+
+- src/services/MarvelService.jsx currently defines the API base and API key inline. The file includes these default values:
   - _apiBase = "https://marvel-server-zeta.vercel.app/"
   - _apiKey = "apikey=d4eecb0c66dedbfae4eab45d312fc1df"
-- That means the client calls a proxy server (https://marvel-server-zeta.vercel.app/) with an embedded api key string.
 
-Recommended secure configuration (preferred)
-- Do not commit private API keys. For a client-side app you should:
-  - Keep sensitive keys/private keys on a server-side proxy that signs requests.
-  - Or, if using a client public key only, keep it in environment variables prefixed with VITE_ so Vite exposes them to the client.
+Because those values are present in the client source, consider moving sensitive operations to a server-side proxy or use Vite environment variables for any public-only values.
 
-Suggested env var names (use these in .env files)
-- VITE_MARVEL_API_BASE  — base URL of the proxy server or Marvel API proxy (e.g. https://your-proxy.example.com/)
-- VITE_MARVEL_API_KEY   — query string or raw api key value (e.g. d4ee... )
+Recommended secure configuration
 
-Add a .env.local in project root (do not commit):
-```text name=.env.local
-VITE_MARVEL_API_BASE=https://marvel-server-zeta.vercel.app/
-VITE_MARVEL_API_KEY=apikey=d4eecb0c66dedbfae4eab45d312fc1df
+- Do not commit private API keys. For client applications prefer:
+  - Keep any private keys on a backend that signs requests.
+  - For public-only keys or base URLs, use Vite env vars prefixed with VITE_ so they are injected at build time.
+
+Suggested env var names (example)
+
+```
+VITE_MARVEL_API_BASE=https://your-proxy-or-api.example.com/
+VITE_MARVEL_API_KEY=apikey=your_public_key_here
 ```
 
-How to migrate MarvelService to use env vars
-- Replace the hardcoded values with Vite env variables (example change):
+Example change to MarvelService to use Vite env vars (edit src/services/MarvelService.jsx):
 
-```javascript name=src/services/MarvelService.jsx
+```javascript
 class MarvelService {
   _apiBase = import.meta.env.VITE_MARVEL_API_BASE || "https://marvel-server-zeta.vercel.app/";
   _apiKey = import.meta.env.VITE_MARVEL_API_KEY || "apikey=d4eecb0c66dedbfae4eab45d312fc1df";
   _baseOffset = 0;
 
-  /* ...rest unchanged... */
+  /* ...rest of the class unchanged... */
 }
 export default MarvelService;
 ```
 
-Important security note:
-- If you need to use Marvel private key to compute MD5 hashes (ts+privateKey+publicKey), do that on a backend, not in the browser. The public key alone can be used for some read-only endpoints but check Marvel API docs. The repo currently points at a proxy server—verify whether that server performs signing on the server side.
+Create a local .env file for development (do NOT commit):
+
+```
+# .env.local
+VITE_MARVEL_API_BASE=https://marvel-server-zeta.vercel.app/
+VITE_MARVEL_API_KEY=apikey=d4eecb0c66dedbfae4eab45d312fc1df
+```
+
+Security note:
+- If you need to use a private key (for example to calculate an MD5 hash with ts+privateKey+publicKey), do that on a backend — do not expose private keys in client-side code.
 
 ---
 
-## Deployment (GitHub Pages)
+## Deployment
 
-This repository already has preconfigured scripts:
-- predeploy: builds the app
-- deploy: uses gh-pages -d dist to publish the built site
-
-Steps to publish from local machine:
-1. Ensure homepage/base path is correct in vite.config.js (if deploying to https://<username>.github.io/<repo>/ set base: '/<repo>/' in vite.config.js).
-2. Build & deploy:
-```bash
-npm run predeploy
-npm run deploy
-# or simply
-npm run deploy
-```
-
-CI / GitHub Actions (recommended)
-- Create a GitHub Actions workflow that runs `npm ci && npm run build` and publishes dist to gh-pages (or uses pages action). This automates deployment on pushes to main.
-
-Vite base config example for GitHub Pages
-```js
-// vite.config.js
-import { defineConfig } from 'vite'
-export default defineConfig({
-  base: '/marvel/', // change to your repo name if publishing at /<repo>/
-  // other config...
-})
-```
+- The repository includes predeploy/deploy scripts in package.json which use gh-pages to publish the built `dist` directory.
+- If deploying to GitHub Pages, ensure the `base` option in vite.config.js is set correctly for your repository path (for example, base: '/marvel/' if publishing at https://<username>.github.io/marvel/).
 
 ---
 
-## Error handling & edge cases
+## Where to look next
 
-- Error Boundary: The app contains src/components/errorBoundary to catch render-time errors and show a fallback UI instead of an application crash.
-- API error handling: MarvelService.getResource throws on non-ok responses; upper-level components catch errors and render src/components/errorMessage.
-- Loading states: spinner and skeleton components reduce layout shifts and clearly indicate pending operations.
-- Missing images/assets: components use fallbacks or placeholder images from public/ or src/resources when thumbnails are missing.
-- Rate limiting & signs: If the API returns 429s or auth errors, components surface friendly messages and retry advice.
-- Private key exposure: This README recommends using a backend proxy to avoid exposing private API keys.
+- src/services/MarvelService.jsx — migrate hardcoded base/key to env vars or move signing logic to a server.
+- Add a `.env.example` file to document required VITE_ variables without committing secrets.
+- Add a GitHub Actions workflow to automate build and deploy to gh-pages if you want continuous deployment.
+
+---
+
+If you want, I can also make small repository changes (add .env.example, refactor MarvelService to use env vars, or add a CI workflow).
