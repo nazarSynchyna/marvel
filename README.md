@@ -1,6 +1,7 @@
 # Marvel Explorer (React + Vite)
 
 A single-page React application built with Vite for browsing Marvel characters and comics.
+
 ---
 
 ## Live demo
