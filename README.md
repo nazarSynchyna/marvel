@@ -182,3 +182,9 @@ Security note:
 - src/services/MarvelService.jsx — migrate hardcoded base/key to env vars or move signing logic to a server.
 - Add a `.env.example` file to document required VITE_ variables without committing secrets.
 - Add a GitHub Actions workflow to automate build and deploy to gh-pages if you want continuous deployment.
+
+---
+
+## Author
+
+**Nazar Synchyna**
