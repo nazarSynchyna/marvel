@@ -1,12 +1,11 @@
 # Marvel Explorer (React + Vite)
 
-A single-page React application built with Vite for browsing Marvel characters and comics. The project is implemented in plain JavaScript with SCSS for styling. This README has been updated to reflect the repository's current files and configuration.
-
+A single-page React application built with Vite for browsing Marvel characters and comics.
 ---
 
 ## Live demo
 
-No public live demo is published from this repository. The project includes gh-pages deployment scripts and can be published to GitHub Pages if you configure the Vite `base` option and run the deploy script.
+[Live Demo](https://nazarsynchyna.github.io/marvel/)
 
 ---
 
@@ -23,11 +22,11 @@ No public live demo is published from this repository. The project includes gh-p
 
 ## Tech stack
 
-- React (client-side UI) — see dependencies in package.json (React 19)
+- React (client-side UI) 
 - Vite (dev server & build)
 - SCSS (Sass) for styling
-- Marvel Comics API accessed through a proxy/service wrapper (see src/services/MarvelService.jsx)
-- Deployment helper: gh-pages (predeploy/deploy scripts in package.json)
+- Marvel API accessed through a proxy/service wrapper (see src/services/MarvelService.jsx)
+- Deployment helper: gh-pages
 
 ---
 
@@ -182,7 +181,3 @@ Security note:
 - src/services/MarvelService.jsx — migrate hardcoded base/key to env vars or move signing logic to a server.
 - Add a `.env.example` file to document required VITE_ variables without committing secrets.
 - Add a GitHub Actions workflow to automate build and deploy to gh-pages if you want continuous deployment.
-
----
-
-If you want, I can also make small repository changes (add .env.example, refactor MarvelService to use env vars, or add a CI workflow).
