@@ -12,12 +12,14 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "formik": "^2.4.9",
     "prop-types": "^15.8.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-router-dom": "^7.18.2",
     "react-transition-group": "^4.4.5",
-    "sass": "^1.102.0"
+    "sass": "^1.102.0",
+    "yup": "^1.7.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
