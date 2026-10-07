@@ -7,7 +7,16 @@ const SingleComicLayout = ({ data }) => {
 
   return (
     <div className="single-comic">
-      <img src={thumbnail} alt={title} className="single-comic__img" />
+      <img
+        src={thumbnail}
+        alt={title}
+        className="single-comic__img"
+        onError={(e) => {
+          e.target.src =
+            "https://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg";
+          e.target.style.objectFit = "upset";
+        }}
+      />
       <div className="single-comic__info">
         <h2 className="single-comic__name">{title}</h2>
         <p className="single-comic__descr">{description}</p>
