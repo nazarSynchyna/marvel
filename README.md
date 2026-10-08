@@ -1,6 +1,6 @@
 # Marvel Explorer (React + Vite)
 
-A single-page React application built with Vite for browsing Marvel characters and comics.
+A single-page React application built with Vite for browsing Marvel characters and comics through a routed information portal.
 
 ---
 
@@ -12,22 +12,40 @@ A single-page React application built with Vite for browsing Marvel characters a
 
 ## Key features
 
-- Character listing with pagination
-- Character detail view (description, homepage/wiki, comics list)
-- Random character widget for discovery
-- Comics list and single-comic preview components
-- Loading skeletons and spinner components for async states
-- Top-level ErrorBoundary component for render-time errors
+- Character listing with paginated “load more” requests
+- Keyboard-accessible character selection with focus management
+- Character detail view with description, homepage, wiki link, and related comics
+- Character search by name with Formik form state and Yup validation
+- Random character widget with manual refresh and automatic refresh every 15 seconds
+- Comics listing with pagination, prices, thumbnails, and links to comic detail pages
+- Single character and single comic routes with dynamic page content
+- Client-side routing with React Router and a dedicated 404 page
+- Lazy-loaded pages and layouts with a top-level `Suspense` fallback
+- Dynamic page metadata (`title` and `description`) through React Helmet
+- Shared process-state rendering for waiting, loading, confirmed, and error states
+- Reusable loading spinner, skeleton, and error message components
+- Error boundaries around major sections of the main page
+- Animated character-list items using `react-transition-group`
+- Image fallback handling for unavailable Marvel thumbnails
+- Memoized character-list content generation with `useMemo`
+- GitHub Pages deployment support through `gh-pages`
 
 ---
 
 ## Tech stack
 
-- React (client-side UI) 
-- Vite (dev server & build)
-- SCSS (Sass) for styling
-- Marvel API accessed through a proxy/service wrapper (see src/services/MarvelService.jsx)
-- Deployment helper: gh-pages
+- React 19 (client-side UI)
+- React DOM 19
+- Vite 8 (development server and production build)
+- React Router DOM 7 (client-side routing)
+- React Helmet (document metadata)
+- Formik and Yup (search form state and validation)
+- PropTypes (component prop validation)
+- React Transition Group (list enter animations)
+- SCSS via Sass (styling)
+- Marvel API accessed through a custom service hook and server-side proxy (see `src/services/MarvelService.jsx`)
+- ESLint 10 with React Hooks and React Refresh plugins
+- `gh-pages` (GitHub Pages deployment)
 
 ---
 
@@ -36,33 +54,77 @@ A single-page React application built with Vite for browsing Marvel characters a
 ```
 src/
   components/
-    app/                # App root (App.jsx)
-    appBanner/          # Banner/hero component
-    appHeader/          # Header / navigation
-    randomChar/         # Random character widget
-    charList/           # Character list & items
-    charInfo/           # Character detail view
-    comicsList/         # Comics listing UI
-    singleComic/        # Single comic detail view
-    errorBoundary/      # Top-level ErrorBoundary component
-    errorMessage/       # Reusable error message UI
-    spinner/            # Spinner component
-    skeleton/           # Skeleton placeholders
+    app/
+      App.jsx                         # Router, lazy routes, and Suspense boundary
+    appBanner/
+      appBanner.jsx
+      appBanner.scss                  # Comics-page banner
+    appHeader/
+      appHeader.jsx
+      appHeader.scss                  # Main navigation
+    charInfo/
+      charInfo.jsx
+      charInfo.scss                   # Selected character details
+    charList/
+      charList.jsx
+      charList.scss                   # Paginated character list and transitions
+    charSearchForm/
+      charSearchForm.jsx
+      charSearchForm.scss             # Formik/Yup character search
+    comicsList/
+      comicsList.jsx
+      comicsList.scss                 # Paginated comics list
+    errorBoundary/
+      errorBoundary.jsx               # Render-time error boundary
+    errorMessage/
+      error.gif
+      errorMessage.jsx                # Error-state UI
+    pages/
+      404.jsx                         # Not-found page
+      ComicsPage.jsx                  # Comics route
+      MainPage.jsx                    # Characters portal
+      SinglePage.jsx                  # Shared data-loading wrapper
+      index.jsx                       # Page exports
+      singleCharacterLayout/
+        singleCharacterLayout.jsx
+        singleCharacterLayout.scss    # Character detail layout
+      singleComicLayout/
+        singleComicLayout.jsx
+        singleComicLayout.scss        # Comic detail layout
+    randomChar/
+      randomChar.jsx
+      randomChar.scss                 # Random character widget
+    skeleton/
+      skeleton.jsx
+      skeleton.scss                   # Loading placeholder
+    spinner/
+      spinner.jsx                     # Loading spinner
+  hooks/
+    http.hook.jsx                     # Fetch wrapper and process state
+  resources/
+    img/                              # Static Marvel-themed images
   services/
-    MarvelService.jsx   # Centralized wrapper for API calls (currently includes hardcoded API base and key)
-  resources/            # Static images / icons
+    MarvelService.jsx                 # API hook and response transformations
   style/
-    style.scss          # Global SCSS entry
-  main.jsx              # App bootstrap (createRoot + render)
+    button.scss                       # Shared button styles
+    style.scss                        # Global SCSS entry point
+    variables.scss                    # Shared style variables
+  utils/
+    setContent.jsx                    # Process-state-to-component helper
+  main.jsx                            # React application bootstrap
+public/
+  favicon.ico
 index.html
-public/                 # Public static assets
 package.json
 vite.config.js
 ```
 
 Notes:
-- main.jsx bootstraps React and renders the app.
-- The MarvelService wrapper is located at src/services/MarvelService.jsx and is the single place where API requests are composed.
+- `src/main.jsx` imports the global styles and mounts the React application.
+- `App.jsx` uses `BrowserRouter` with the Vite base URL, lazy-loaded route components, and a `Suspense` spinner fallback.
+- The main routes are `/`, `/comics`, `/comics/:id`, and `/characters/:id`; unmatched paths render the 404 page.
+- `MarvelService.jsx` is a custom hook that uses `useHttp`, requests character and comic data, and transforms API responses for the UI.
+- `useHttp` exposes the current process state (`waiting`, `loading`, `confirmed`, or `error`), while `setContent` maps those states to loading, success, and error components.
 
 ---
 
@@ -107,13 +169,19 @@ Build production assets
 npm run build
 ```
 
+Run ESLint
+
+```bash
+npm run lint
+```
+
 Preview production build locally
 
 ```bash
 npm run preview
 ```
 
-Publish to GitHub Pages (if configured)
+Publish to GitHub Pages
 
 ```bash
 npm run deploy
@@ -125,17 +193,18 @@ npm run deploy
 
 Current state (what's in the repository)
 
-- src/services/MarvelService.jsx currently defines the API base and API key inline. The file includes these default values:
-  - _apiBase = "https://marvel-server-zeta.vercel.app/"
-  - _apiKey = "apikey=d4eecb0c66dedbfae4eab45d312fc1df"
-
-Because those values are present in the client source, consider moving sensitive operations to a server-side proxy or use Vite environment variables for any public-only values.
+- `src/services/MarvelService.jsx` currently uses the following inline configuration:
+  - `_apiBase = "https://marvel-server-zeta.vercel.app/"`
+  - `_apiKey = "apikey=d4eecb0c66dedbfae4eab45d312fc1df"`
+- Requests are sent through the proxy endpoints `characters` and `comics`.
+- The service adds pagination parameters (`limit` and `offset`) and transforms API responses into the data shapes consumed by the components.
+- The client currently exposes the API key in the bundled source. Treat it as public and rotate or replace it if it provides access to a protected resource.
 
 Recommended secure configuration
 
-- Do not commit private API keys. For client applications prefer:
-  - Keep any private keys on a backend that signs requests.
-  - For public-only keys or base URLs, use Vite env vars prefixed with VITE_ so they are injected at build time.
+- Do not commit private API keys. Keep private Marvel credentials and request-signing logic on a backend or proxy.
+- If a base URL or public-only key must be configured in the client, use Vite environment variables prefixed with `VITE_`.
+- Add a `.env.example` file for documented variable names and keep local secrets in `.env.local`.
 
 Suggested env var names (example)
 
@@ -144,44 +213,45 @@ VITE_MARVEL_API_BASE=https://your-proxy-or-api.example.com/
 VITE_MARVEL_API_KEY=apikey=your_public_key_here
 ```
 
-Example change to MarvelService to use Vite env vars (edit src/services/MarvelService.jsx):
+The service is implemented as a hook, so an environment-variable migration would update its constants rather than replace a class:
 
 ```javascript
-class MarvelService {
-  _apiBase = import.meta.env.VITE_MARVEL_API_BASE || "https://marvel-server-zeta.vercel.app/";
-  _apiKey = import.meta.env.VITE_MARVEL_API_KEY || "apikey=d4eecb0c66dedbfae4eab45d312fc1df";
-  _baseOffset = 0;
+const useMarvelService = () => {
+  const { request, clearError, process, setProcess } = useHttp();
 
-  /* ...rest of the class unchanged... */
-}
-export default MarvelService;
-```
+  const _apiBase =
+    import.meta.env.VITE_MARVEL_API_BASE ||
+    "https://marvel-server-zeta.vercel.app/";
+  const _apiKey =
+    import.meta.env.VITE_MARVEL_API_KEY ||
+    "apikey=your_public_key_here";
 
-Create a local .env file for development (do NOT commit):
-
-```
-# .env.local
-VITE_MARVEL_API_BASE=https://marvel-server-zeta.vercel.app/
-VITE_MARVEL_API_KEY=apikey=d4eecb0c66dedbfae4eab45d312fc1df
+  // getAllCharacters, getCharacter, getCharacterByName,
+  // getAllComics, and getComic use these values for requests.
+};
 ```
 
 Security note:
-- If you need to use a private key (for example to calculate an MD5 hash with ts+privateKey+publicKey), do that on a backend — do not expose private keys in client-side code.
+- If a private key is required to calculate an MD5 hash using `ts + privateKey + publicKey`, perform that calculation on a backend. Never expose private keys in client-side code.
 
 ---
 
 ## Deployment
 
-- The repository includes predeploy/deploy scripts in package.json which use gh-pages to publish the built `dist` directory.
-- If deploying to GitHub Pages, ensure the `base` option in vite.config.js is set correctly for your repository path (for example, base: '/marvel/' if publishing at https://<username>.github.io/marvel/).
+- The repository includes `predeploy` and `deploy` scripts that build the application and publish the `dist` directory with `gh-pages`.
+- `vite.config.js` sets `base: "/marvel/"`, matching the repository's GitHub Pages URL.
+- The Vite development server is configured to use polling, which can help file watching in containerized or virtualized environments.
 
 ---
 
 ## Where to look next
 
-- src/services/MarvelService.jsx — migrate hardcoded base/key to env vars or move signing logic to a server.
-- Add a `.env.example` file to document required VITE_ variables without committing secrets.
-- Add a GitHub Actions workflow to automate build and deploy to gh-pages if you want continuous deployment.
+- Move the API base URL and key out of `MarvelService.jsx` and document the final environment-variable setup.
+- Add automated tests for API transformations, process-state rendering, pagination boundaries, search validation, and route-level behavior.
+- Add a GitHub Actions workflow to run lint/build checks and automate GitHub Pages deployment.
+- Consolidate duplicated local `setContent` implementations in list components with the shared `src/utils/setContent.jsx` helper.
+- Correct inconsistent import path casing and component filename casing so the project behaves consistently on case-sensitive file systems.
+- Improve request cancellation and stale-response handling when users navigate or submit searches rapidly.
 
 ---
 
