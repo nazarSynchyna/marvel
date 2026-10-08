@@ -1,0 +1,1 @@
+import{n as e}from"./index-DFHAGR44.js";var t=`/marvel/assets/error-BBH_usxQ.gif`,n=e(),r=()=>(0,n.jsx)(`img`,{style:{display:`block`,width:`250px`,height:`250px`,objectFit:`contain`,margin:`0 auto`},src:t,alt:`Error`});export{t as n,r as t};

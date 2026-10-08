@@ -1,0 +1,1 @@
+.single-comic{grid-template-columns:293px 550px auto;align-items:start;column-gap:50px;margin-top:50px;display:grid}.single-comic__char-img{object-fit:cover;object-position:top center;width:293px;height:293px}.single-comic__name{font-size:22px;font-weight:700;line-height:29px}.single-comic__descr{margin-top:25px;font-size:18px;line-height:24px}

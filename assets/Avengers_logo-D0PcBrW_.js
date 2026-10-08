@@ -1,0 +1,1 @@
+var e=`/marvel/assets/Avengers-B-LhCFDs.png`,t=`/marvel/assets/Avengers_logo-qQtRsob-.png`;export{e as n,t};
